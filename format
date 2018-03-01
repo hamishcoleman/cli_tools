@@ -1,0 +1,40 @@
+#!/bin/bash
+#
+#
+
+true() { return 0; }
+trap true 2 3 20
+
+cat <<EOF
+WARNING, ALL DATA ON NON-REMOVABLE DISK
+DRIVE C: WILL BE LOST!
+EOF
+printf "Proceed with Format (Y/N)?"
+read YN
+cat <<EOF
+
+EOF
+
+for i in `seq 0 100`; do
+	printf "Formatting %i%%\r" $i
+	setsid sleep 0.2
+done
+
+cat <<EOF
+Formatting 9.81M
+Format complete.
+
+EOF
+printf "Volume label (11 characters, ENTER for none)? "
+read LABEL
+cat <<EOF
+
+   10,264,576 bytes total disk space
+   10,264,576 bytes available on disk
+
+        4,096 bytes in each allocation unit.
+        2,506 allocation units available on disk.
+
+Volume Serial Number is 0B23-1803
+EOF
+
