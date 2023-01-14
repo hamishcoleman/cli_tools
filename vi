@@ -1,0 +1,7 @@
+#!/bin/sh
+# fuck you vim
+# I am not playing whak-a-mole with your constant thought that you are an X
+# program
+
+unset DISPLAY
+exec /usr/bin/vi $*
