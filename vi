@@ -2,6 +2,12 @@
 # fuck you vim
 # I am not playing whak-a-mole with your constant thought that you are an X
 # program
+#
+# :dotsctl:
+#   destdir: ~/bin/
+#   dpkg:
+#     - vim-nox
+# ...
 
 unset DISPLAY
 exec /usr/bin/vi "$@"
