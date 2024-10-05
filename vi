@@ -4,4 +4,4 @@
 # program
 
 unset DISPLAY
-exec /usr/bin/vi $*
+exec /usr/bin/vi "$@"
