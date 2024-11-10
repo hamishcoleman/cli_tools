@@ -6,6 +6,9 @@ use strict;
 # Eg: This allows you to run something once a minute at exactly the same
 # time each time around, even if the run time changes
 #
+# :dotsctl:
+#   destdir: ~/bin/
+# ...
 
 sub main() {
     my $interval = $ARGV[0];
