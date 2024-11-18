@@ -1,0 +1,32 @@
+#!/usr/bin/perl
+use warnings;
+use strict;
+#
+# Round up to the next interval and sleep for long enough to get there
+# Eg: This allows you to run something once a minute at exactly the same
+# time each time around, even if the run time changes
+#
+# :dotsctl:
+#   destdir: ~/bin/
+# ...
+
+sub main() {
+    my $interval = $ARGV[0];
+
+    my $seconds = 0;
+
+    if ($interval =~ m/(\d+)\s*s/) {
+        $seconds = $1;
+    } elsif ($interval =~ m/(\d+)\s*m/) {
+        $seconds = $1 * 60;
+    } elsif ($interval =~ m/(\d+)\s*h/) {
+        $seconds = $1 * 60 * 60;
+    } else {
+        $seconds = $interval * 1;
+    }
+
+    sleep($seconds-(time()%$seconds));
+}
+
+main();
+
