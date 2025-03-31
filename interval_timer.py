@@ -9,11 +9,6 @@ import argparse
 import time
 
 
-def argparser():
-    args = argparse.ArgumentParser(description=__doc__)
-    return args.parse_args()
-
-
 def num2timestr(seconds):
     """Convert a number of seconds into a human time"""
 
@@ -44,11 +39,52 @@ def num2timestr(seconds):
     return "".join(r)
 
 
+class Statistics:
+    def __init__(self):
+        self.total = 0
+        self.count = 0
+        self.last = None
+        self.min = None
+        self.max = None
+
+    def add(self, delta):
+        self.last = delta
+        self.count += 1
+        self.total += delta
+
+        if self.min is None:
+            self.min = delta
+        if self.max is None:
+            self.max = delta
+
+        if self.min > delta:
+            self.min = delta
+
+        if self.max < delta:
+            self.max = delta
+
+    @property
+    def mean(self):
+        return self.total / self.count
+
+    def __str__(self):
+        return " ".join([
+            str(self.count),
+            str(int(self.total)),
+            num2timestr(int(self.last)),
+            num2timestr(self.mean),
+        ])
+
+
+def argparser():
+    args = argparse.ArgumentParser(description=__doc__)
+    return args.parse_args()
+
+
 def main():
     args = argparser()
 
-    total = 0
-    count = 0
+    stats = Statistics()
     t1 = time.time()
 
     while True:
@@ -56,15 +92,10 @@ def main():
         t2 = time.time()
 
         elapsed = t2 - t1
-        total += elapsed
-        count += 1
-        avg = total / count
+        stats.add(elapsed)
         t1 = t2
 
-        print(
-            f"{int(t2)} {count} {int(total)} {num2timestr(int(elapsed))} {num2timestr(avg)}",
-            end = "",
-        )
+        print(int(t2), stats, end = "")
 
 
 if __name__ == "__main__":
