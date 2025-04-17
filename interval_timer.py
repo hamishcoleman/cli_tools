@@ -68,12 +68,20 @@ class Statistics:
         return self.total / self.count
 
     def __str__(self):
-        return " ".join([
-            str(self.count),
-            str(int(self.total)),
-            num2timestr(int(self.last)),
-            num2timestr(self.mean),
-        ])
+        fields = {
+            "count": self.count,
+            "total": num2timestr(int(self.total)),
+            "last": num2timestr(int(self.last)),
+            "min": num2timestr(int(self.min)),
+            "max": num2timestr(int(self.max)),
+            "mean": num2timestr(self.mean),
+        }
+
+        r = []
+        for k, v in fields.items():
+            r.append(f"{k}={v}")
+
+        return " ".join(r)
 
 
 def argparser():
