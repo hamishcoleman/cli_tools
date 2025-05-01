@@ -25,7 +25,7 @@ def argparser():
     )
     args.add_argument(
         "yaml",
-        nargs="+",
+        nargs="*",
         type=argparse.FileType("r", encoding="utf8"),
         help="YAML File(s) to load data from",
     )
