@@ -4,20 +4,19 @@
 #
 
 import atexit
-import os
 import sys
 import termios
 
- 
+
 CSI = "\x1b["
 
 
 def savecursor():
-    return f"\x1b7"
+    return "\x1b7"
 
 
 def restorecursor():
-    return f"\x1b8"
+    return "\x1b8"
 
 
 def CUP(x, y):
@@ -48,6 +47,8 @@ def read_response(end):
 
 
 orig = termios.tcgetattr(sys.stdin)
+
+
 @atexit.register
 def _termios_reset():
     termios.tcsetattr(sys.stdin, termios.TCSADRAIN, orig)
@@ -63,7 +64,7 @@ def termios_set():
 def main():
     termios_set()
     print(savecursor(), end="")
-    print(CUP(9999,9999), end="")
+    print(CUP(9999, 9999), end="")
     print(getcursor(), end="")
     print(restorecursor(), end="")
     sys.stdout.flush()

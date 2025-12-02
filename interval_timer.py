@@ -90,7 +90,7 @@ def argparser():
 
 
 def main():
-    args = argparser()
+    _ = argparser()
 
     stats = Statistics()
     t1 = time.time()
@@ -103,7 +103,7 @@ def main():
         stats.add(elapsed)
         t1 = t2
 
-        print(int(t2), stats, end = "")
+        print(int(t2), stats, end="")
 
 
 if __name__ == "__main__":
