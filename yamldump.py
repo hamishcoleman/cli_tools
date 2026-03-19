@@ -123,6 +123,20 @@ class Vault:
     def constructor(cls, loader, node):
         return cls(node.value)
 
+# def yaml_literal(dumper, data):
+#
+#     if "\n" in data:
+#         return dumper.represent_scalar(
+#           'tag:yaml.org,2002:str',
+#           data,
+#           style="|"
+#         )
+#
+#     return dumper.represent_scalar('tag:yaml.org,2002:str', data)
+#
+#
+# yaml.SafeDumper.add_representer(str, yaml_literal)
+
 
 def main():
     args = argparser()
