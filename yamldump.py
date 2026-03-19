@@ -123,7 +123,13 @@ class Vault:
     def constructor(cls, loader, node):
         return cls(node.value)
 
+
 # def yaml_literal(dumper, data):
+#   # note that if the representor discovers text that is impossible to
+#   # represent with the flow style, it will just revert to a quoted style.
+#   # There is no error seen, nor is there a way to force it without mutating
+#   # the data.
+#   # E.G a space before a newline: " \n"
 #
 #     if "\n" in data:
 #         return dumper.represent_scalar(
