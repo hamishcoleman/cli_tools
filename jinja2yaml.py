@@ -29,6 +29,12 @@ def argparser():
         type=argparse.FileType("r", encoding="utf8"),
         help="YAML File(s) to load data from",
     )
+    args.add_argument(
+        "-D",
+        action="append",
+        default=[],
+        help="Define toplevel data overrides with k=v pairs"
+    )
     return args.parse_args()
 
 
@@ -47,6 +53,10 @@ def main():
 
     # TODO: merge the loaded data, not just dict.update() it
     # TODO: optionally dump the resulting db, for simpler debugging
+
+    for kv in args.D:
+        k, v = kv.split("=")
+        db[k] = v
 
     env = jinja2.Environment(
         loader=jinja2.FileSystemLoader("."),
