@@ -51,6 +51,7 @@ def main():
     env = jinja2.Environment(
         loader=jinja2.FileSystemLoader("."),
         extensions=["jinja2.ext.do", "jinja2.ext.loopcontrols"],
+        undefined=jinja2.StrictUndefined,
     )
 
     # TODO: the template loader doesnt like relative paths
