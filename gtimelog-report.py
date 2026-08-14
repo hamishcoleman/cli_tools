@@ -307,10 +307,11 @@ class Events:
         """Print one row of the output matrix, with correct spacing etc"""
         if note_len is None:
             note_len = self.note_len_max()
-        if prefix_just == ">":
-            print("{0:>{1}}, ".format(prefix, note_len), sep="", end="")
-        else:
-            print("{0:<{1}}, ".format(prefix, note_len), sep="", end="")
+        print(
+            "{0:{2}{1}}, ".format(prefix, note_len, prefix_just),
+            sep="",
+            end=""
+        )
 
         if dates is None:
             dates = self.groupby("date")
