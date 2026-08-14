@@ -206,11 +206,25 @@ class Events:
             total += e._value
         return total
 
+    def date(self):
+        dates = self.groupby("date")
+        if len(dates) > 1:
+            raise ValueError("Too many dates")
+        return self._data[0].date()
+
     def dow(self):
         dates = self.groupby("date")
         if len(dates) > 1:
             raise ValueError("Too many dates")
         return self._data[0].dow()
+
+    def working_hours(self):
+        slacking = self.groupby("slacking")
+        try:
+            duration = slacking[False].duration()
+        except KeyError:
+            duration = 0
+        return duration
 
     def toil(self):
         total = 0.0
