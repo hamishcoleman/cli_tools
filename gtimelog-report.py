@@ -24,7 +24,7 @@ def argparser():
         nargs="?",
         type=argparse.FileType("r", encoding="utf8"),
     )
-    
+
     args = parser.parse_args()
 
     if args.filename is None:
@@ -86,7 +86,7 @@ class Event:
     def date(self):
         if self.start is None:
             return None
-        virtual_midnight = datetime.time(2,0)
+        virtual_midnight = datetime.time(2, 0)
         if self.start.time() < virtual_midnight:
             d = self.start + datetime.timedelta(days=-1)
         else:
@@ -106,7 +106,13 @@ class Event:
             return False
 
     def __str__(self):
-        return f"{self.start}, {self.finish}, {self.duration()}, {self.location}, {self.note}"
+        return ",".join([
+            self.start,
+            self.finish,
+            self.duration(),
+            self.location,
+            self.note,
+        ])
 
 
 class EventMeta:
@@ -141,7 +147,7 @@ class Events:
     @classmethod
     def from_file(cls, file, debug):
         self = cls()
-      
+
         reference = None
 
         for line in file:
@@ -183,7 +189,6 @@ class Events:
 
         # TODO:
         # - A more stable time than now() to assist with testing
-
 
     def duration(self):
         """Duration in hours"""
@@ -289,7 +294,16 @@ class Events:
             attr = attr()
         return attr
 
-    def _row(self, prefix, name, suffix, note_len=None, date_names=None, dates=None, prefix_just=">"):
+    def _row(
+            self,
+            prefix,
+            name,
+            suffix,
+            note_len=None,
+            date_names=None,
+            dates=None,
+            prefix_just=">"
+            ):
         """Print one row of the output matrix, with correct spacing etc"""
         if note_len is None:
             note_len = self.note_len_max()
