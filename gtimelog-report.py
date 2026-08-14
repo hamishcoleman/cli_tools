@@ -88,7 +88,12 @@ class Event:
     def date(self):
         if self.start is None:
             return None
-        return self.start.strftime("%Y-%m-%d")
+        virtual_midnight = datetime.time(2,0)
+        if self.start.time() < virtual_midnight:
+            d = self.start + datetime.timedelta(days=-1)
+        else:
+            d = self.start
+        return d.strftime("%Y-%m-%d")
 
     def dow(self):
         if self.start is None:
@@ -191,6 +196,30 @@ class Events:
             total += d
         return total
 
+    def dow(self):
+        dates = self.groupby("date")
+        if len(dates) > 1:
+            raise ValueError("Too many dates")
+        return self._data[0].dow()
+
+    def toil(self):
+        total = 0.0
+        try:
+            dates = self.groupby("slacking")[False].groupby("date")
+        except KeyError:
+            return total
+
+        for datestr, date in dates.items():
+            # TODO:
+            # - hardcoded weekend days
+            if date.dow() in ["Sat", "Sun"]:
+                daylen = 0
+            else:
+                daylen = self.daylen
+
+            total += date.duration() - daylen
+        return total
+
     def note_len_max(self):
         note_len = 0
         for e in self._data:
@@ -264,17 +293,7 @@ class Events:
         print("{0:>{1}}, ".format("TOIL", note_len), sep="", end="")
         toil_sum = 0
         for date in date_names:
-            slacking = dates[date].groupby("slacking")
-            try:
-                working = slacking[False].duration()
-            except KeyError:
-                working = 0
-            toil = working - self.daylen
-
-            # TODO:
-            # - calculate toil as overtime on weekday
-            # - also need to add weekend processing
-
+            toil = dates[date].toil()
             print(f"{toil:10.2f}, ", sep="", end="")
             toil_sum += toil 
         print(f"{toil_sum:10.2f}")
