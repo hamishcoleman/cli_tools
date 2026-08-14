@@ -38,11 +38,14 @@ def argparser():
 
 class Event:
     def __init__(self, start, finish, note):
+        self.finish = finish
+        self.note = note
+
         if isinstance(start, Event):
-            dt_start = start.finish
+            self.start = start.finish
             self.location = start.location
         else:
-            dt_start = start
+            self.start = start
             self.location = None
 
         # TODO:
@@ -52,14 +55,9 @@ class Event:
         virtual_midnight = finish.replace(hour=2, minute=0)
         if finish < virtual_midnight:
             virtual_midnight = virtual_midnight - datetime.timedelta(days=1)
-        if dt_start is not None and dt_start < virtual_midnight:
-            dt_start = None
+        if self.start is not None and self.start < virtual_midnight:
+            self.start = None
             self.location = None
-
-        self.start = dt_start
-        self.finish = finish
-        self.note = note
-        # TODO: parse note for slacking
 
         if self.note == "Meta: Start WFH **":
             self.location = "WFH"
@@ -165,9 +163,6 @@ class Events:
                 continue
 
             event = Event.from_line(line, reference)
-            if event.location is None and reference is not None:
-                event.location = reference.location
-
             self.append(event)
 
             reference = event
