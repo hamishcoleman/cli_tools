@@ -106,6 +106,27 @@ class Event:
         return f"{self.start}, {self.finish}, {self.duration()}, {self.location}, {self.note}"
 
 
+class EventMeta:
+    def __init__(self, date, name, value):
+        self.start = None
+        self.finish = date
+        self.note = f"#meta {name} {value}"
+        self._name = name
+        self._value = value
+
+    def week(self):
+        return None
+
+    def date(self):
+        return None
+
+    def slacking(self):
+        return False
+
+    def duration(self):
+        return None
+
+
 class Events:
     def __init__(self):
         self._data = []
@@ -124,11 +145,12 @@ class Events:
                 print("LINE:", line)
 
             if line.startswith("#meta"):
+                fields = line.split()
+                event = EventMeta(reference.finish, fields[1], fields[2])
+                self.append(event)
                 # TODO:
-                # - implement this!
-                # meta overtime_paid $num
-                # raise NotImplemented
-                print("WARN: unhandled #meta")
+                # - implement consumer of this data
+                #   "#meta overtime_paid $num"
                 continue
 
             if line.startswith("#"):
