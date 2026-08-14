@@ -273,70 +273,90 @@ class Events:
         self._groups = r
         return r
 
+    def _attr(self, name):
+        """helper to get an attrib value"""
+        if name == "":
+            # support nullable fields
+            return ""
+
+        try:
+            attr = getattr(self, name)
+        except AttributeError:
+            # assume it is supposed to be text
+            return name
+
+        if callable(attr):
+            attr = attr()
+        return attr
+
+    def _row(self, prefix, name, suffix, note_len=None, date_names=None, dates=None, prefix_just=">"):
+        """Print one row of the output matrix, with correct spacing etc"""
+        if note_len is None:
+            note_len = self.note_len_max()
+        if prefix_just == ">":
+            print("{0:>{1}}, ".format(prefix, note_len), sep="", end="")
+        else:
+            print("{0:<{1}}, ".format(prefix, note_len), sep="", end="")
+
+        if dates is None:
+            dates = self.groupby("date")
+        if date_names is None:
+            date_names = sorted(dates)
+        for datestr in date_names:
+            try:
+                date = dates[datestr]
+                val = date._attr(name)
+            except KeyError:
+                val = ""
+
+            if isinstance(val, float):
+                print(f"{val:10.2f}, ", sep="", end="")
+            else:
+                print(f"{val:<10}, ", sep="", end="")
+
+        if suffix is None:
+            print()
+        else:
+            val = self._attr(suffix)
+            if isinstance(val, float):
+                print(f"{val:10.2f}")
+            else:
+                print(f"{val:>10}")
+
     def print_as_week(self):
-        note_len = self.note_len_max()
-
-        dates = self.groupby("date")
-        date_names = sorted(dates)
-
         # First line shows the Date for each column
-        print("{0:>{1}}, ".format("Date", note_len), sep="", end="")
-        for date in date_names:
-            print(f"{date:<10}, ", sep="", end="")
-        print("{0:>10}".format("TOTAL"))
-
-        # Second line shows the day shortname
-        print("{0:>{1}}, ".format("", note_len), sep="", end="")
-        for date in date_names:
-            dow = dates[date]._data[0].dow()
-            print(f"{dow:<10}, ", sep="", end="")
-        print()
+        self._row("Date", "date", "TOTAL")
+        self._row("", "dow", None)
 
         # One line for each task
+        dates = self.groupby("date")
+        date_names = sorted(dates)
+        note_len = self.note_len_max()
         notes = self.groupby("note")
         note_values = sorted(notes)
         for note in note_values:
             # first column is the task name
-            print("{0:{1}}, ".format(note, note_len), sep="", end="")
-
-            # one column for each day
-            note_dates = notes[note].groupby("date")
-            for date in date_names:
-                if date not in note_dates:
-                    print("{0:>10}, ".format(""), sep="", end="")
-                else:
-                    cell = note_dates[date].duration()
-                    print(f"{cell:10.2f}, ", sep="", end="")
-
-            print(f"{notes[note].duration():10.2f}", sep="", end="")
-            print()
+            notes[note]._row(
+                note,
+                "duration",
+                "duration",
+                note_len=note_len,
+                date_names=date_names,
+                dates=notes[note].groupby("date"),
+                prefix_just="<",
+            )
 
         # After task totals comes a daily totals for each column
         print()
-        print("{0:>{1}}, ".format("WORK", note_len), sep="", end="")
-        for date in date_names:
-            slacking = dates[date].groupby("slacking")
-            try:
-                duration = slacking[False].duration()
-            except KeyError:
-                duration = 0
-            print(f"{duration:10.2f}, ", sep="", end="")
-        print(f"{self.groupby('slacking')[False].duration():10.2f}")
-
-        print("{0:>{1}}, ".format("TOIL", note_len), sep="", end="")
-        toil_sum = 0
-        for date in date_names:
-            toil = dates[date].toil()
-            print(f"{toil:10.2f}, ", sep="", end="")
-            toil_sum += toil 
-        print(f"{toil_sum:10.2f}")
+        self._row("WORK", "working_hours", "working_hours")
+        self._row("TOIL", "toil", "toil")
 
         # Show a "assuming no more slacking, hit option->{day} at $time"
         #
         # TODO:
+        # - implement this value
         # - skip this section if this is not the current week
-        print("{0:>{1}}, ".format("WORK UNTIL", note_len), sep="", end="")
-        print("TODO")
+        self._row("WORK UNTIL", "", None)
 
         # Old clarity option went here
         # it output a new grid table with inflation applied to smear
