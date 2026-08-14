@@ -115,7 +115,7 @@ class EventMeta:
         self.finish = date
         self.note = f"#meta {name} {value}"
         self._name = name
-        self._value = value
+        self._value = float(value)
 
     def week(self):
         return None
@@ -189,6 +189,17 @@ class Events:
             if d is None:
                 continue
             total += d
+        return total
+
+    def sum_meta(self, name):
+        """Add up all the value of meta events with this name"""
+        total = 0.0
+        for e in self._data:
+            if not isinstance(e, EventMeta):
+                continue
+            if e._name != name:
+                continue
+            total += e._value
         return total
 
     def dow(self):
@@ -322,11 +333,9 @@ class Events:
         r["workhours"] = self.groupby("slacking")[False].duration()
         r["hoursperworkday"] = r["workhours"] / r["workdays"]
 
-        # TODO:
-        # - toil calculation should take into account weekends
-        r["toil"] = r["workhours"] - (self.daylen * r["workdays"])
+        r["overtime_paid"] = self.sum_meta("overtime_paid")
+        r["toil"] = self.toil() - r["overtime_paid"]
 
-        r["overtime_paid"] = "FIXME"
         print(json.dumps(r, indent=2, sort_keys=True))
 
 
