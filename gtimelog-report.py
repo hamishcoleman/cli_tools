@@ -133,7 +133,9 @@ class EventMeta:
 class Events:
     def __init__(self):
         self._data = []
-        self._totals = {}
+        self._note_len_max = None
+        self._groups = {}
+
         self.daylen = 7.6
 
     @classmethod
@@ -171,6 +173,8 @@ class Events:
 
     def append(self, event):
         self._data.append(event)
+        self._note_len_max = None
+        self._groups = {}
 
     def append_fake_now_event(self):
         """Add a synthetic event for right now"""
@@ -227,12 +231,19 @@ class Events:
         return total
 
     def note_len_max(self):
+        if self._note_len_max is not None:
+            return self._note_len_max
+
         note_len = 0
         for e in self._data:
             note_len = max(note_len, len(e.note))
+        self._note_len_max = note_len
         return note_len
 
     def groupby(self, name):
+        if name in self._groups:
+            return self._groups[name]
+
         r = {}
         for e in self._data:
             attr = getattr(e, name)
@@ -244,6 +255,8 @@ class Events:
             if attr not in r:
                 r[attr] = Events()
             r[attr].append(e)
+
+        self._groups = r
         return r
 
     def print_as_week(self):
