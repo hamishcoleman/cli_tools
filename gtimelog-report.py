@@ -122,6 +122,7 @@ class EventMeta:
         self.note = f"#meta {name} {value}"
         self._name = name
         self._value = float(value)
+        self.location = None
 
     def week(self):
         return None
@@ -397,6 +398,10 @@ class Events:
 
         r["overtime_paid"] = self.sum_meta("overtime_paid")
         r["toil"] = self.toil() - r["overtime_paid"]
+
+        r["locations"] = {}
+        for name, events in self.groupby("slacking")[False].groupby("location").items():
+            r["locations"][name] = events.duration()
 
         print(json.dumps(r, indent=2, sort_keys=True))
 
