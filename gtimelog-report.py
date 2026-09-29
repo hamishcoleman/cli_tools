@@ -190,6 +190,8 @@ class Events:
 
         # TODO:
         # - A more stable time than now() to assist with testing
+        # - if _data[-1] is not today, dont create a new day just for this
+        # - if we have worked "enough" today, dont automatically append more
 
     def duration(self):
         """Duration in hours"""
