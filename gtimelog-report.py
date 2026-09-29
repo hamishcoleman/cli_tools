@@ -247,6 +247,14 @@ class Events:
             else:
                 daylen = self.daylen
 
+            # TODO:
+            # - this feels a little hacky
+            # - handle virtual midnight properly
+            # - if none toil, could show that clearly
+            if str(date.date()) == str(datetime.date.today()):
+                # today is not done yet, dont accumulate toil until afterwards
+                continue
+
             total += date.duration() - daylen
         return total
 
