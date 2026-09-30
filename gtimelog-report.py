@@ -59,10 +59,10 @@ class Event:
             self.start = None
             self.location = None
 
-        if self.note == "Meta: Start WFH **":
-            self.location = "WFH"
-        elif self.note == "Meta: Start **":
+        if self.note == "Meta: Start **":
             self.location = "Other"
+        elif self.note.startswith("Meta: Start "):
+            self.location = self.note[12:-3]
 
     @classmethod
     def from_line(cls, line, start):
